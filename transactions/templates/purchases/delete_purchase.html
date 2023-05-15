@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+
+{% block title %} Borrar Compra {% endblock title %}
+
+
+{% block content %}
+                
+    <form method="post">
+        
+        {% csrf_token %}
+        
+        <fieldset class="form-group">
+            <div style="color:#575757; font-style: bold; font-size: 3rem; border-bottom: 1px solid white;">
+                Eliminar factura de compra</div> <br>
+            <h2 style="color:#575757;">
+                ¿Está seguro de que desea eliminar el número de factura de compra?: {{ object.billno }}?</h2>
+        </fieldset>
+
+        <div class="form-group">  
+            <button type="submit" class="btn btn-danger">
+                Sí, Eliminar</button>
+            <a href="{% url 'purchases-list' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+        
+    </form>
+
+{% endblock content %}
