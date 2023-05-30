@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import (
     View,
-    CreateView, 
+    CreateView,
     UpdateView
 )
 from django.contrib.messages.views import SuccessMessageMixin
@@ -10,7 +10,8 @@ from .models import Stock
 from .forms import StockForm
 from django_filters.views import FilterView
 from .filters import StockFilter
-
+from rest_framework import generics
+from .serializers import StockSerializer
 
 class StockListView(FilterView):
     filterset_class = StockFilter
@@ -19,28 +20,28 @@ class StockListView(FilterView):
     paginate_by = 10
 
 
-class StockCreateView(SuccessMessageMixin, CreateView):                                 # createview class to add new stock, mixin used to display message
-    model = Stock                                                                       # setting 'Stock' model as model
-    form_class = StockForm                                                              # setting 'StockForm' form as form
-    template_name = "edit_stock.html"                                                   # 'edit_stock.html' used as the template
-    success_url = '/inventory'                                                          # redirects to 'inventory' page in the url after submitting the form
-    success_message = "Stock se a creado correctamente"                             # displays message when form is submitted
+class StockCreateView(SuccessMessageMixin, CreateView):
+    model = Stock
+    form_class = StockForm
+    template_name = "edit_stock.html"
+    success_url = '/inventory'
+    success_message = "Stock se ha creado correctamente"
 
-    def get_context_data(self, **kwargs):                                               # used to send additional context
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = 'Nuevo Stock'
         context["savebtn"] = 'Agregar al Inventario'
-        return context       
+        return context
 
 
-class StockUpdateView(SuccessMessageMixin, UpdateView):                                 # updateview class to edit stock, mixin used to display message
-    model = Stock                                                                       # setting 'Stock' model as model
-    form_class = StockForm                                                              # setting 'StockForm' form as form
-    template_name = "edit_stock.html"                                                   # 'edit_stock.html' used as the template
-    success_url = '/inventory'                                                          # redirects to 'inventory' page in the url after submitting the form
-    success_message = "Stock se a actualizado correctamente"                             # displays message when form is submitted
+class StockUpdateView(SuccessMessageMixin, UpdateView):
+    model = Stock
+    form_class = StockForm
+    template_name = "edit_stock.html"
+    success_url = '/inventory'
+    success_message = "Stock se ha actualizado correctamente"
 
-    def get_context_data(self, **kwargs):                                               # used to send additional context
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = 'Editar Stock'
         context["savebtn"] = 'Actualizar Stock'
@@ -50,14 +51,19 @@ class StockUpdateView(SuccessMessageMixin, UpdateView):                         
 
 class StockDeleteView(View):
     template_name = "delete_stock.html"
-    success_message = "Stock se a borrado correctamente"
+    success_message = "Stock se ha borrado correctamente"
 
     def get(self, request, pk):
         stock = get_object_or_404(Stock, pk=pk)
         return render(request, self.template_name, {'object' : stock})
 
-    def post(self, request, pk):  
+    def post(self, request, pk):
         stock = get_object_or_404(Stock, pk=pk)
-        stock.delete()    # Llama al método delete() del objeto stock para eliminarlo de la base de datos                                       
+        stock.delete()
         messages.success(request, self.success_message)
         return redirect('inventory')
+
+
+class StockList(generics.ListAPIView):
+    queryset = Stock.objects.all()
+    serializer_class = StockSerializer
