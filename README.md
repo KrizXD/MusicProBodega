@@ -1,5 +1,5 @@
 # MusicProBodega
-Version 1.0 de sistema de bodega para musicpro
+Version 1.3 de sistema de bodega para musicpro
 
 Instrucciones
 - Instale los requisitos: pip install -r requirements.txt
