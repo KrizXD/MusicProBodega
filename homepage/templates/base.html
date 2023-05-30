@@ -80,6 +80,13 @@
                     </ul>
                 </li>
                 <li>
+                    <a href="#apiSubmenu" data-toggle="collapse" class="dropdown-toggle sidebar-text right-arrow sidebar-button"><i class="fas fa-satellite-dish"></i> Api</a>
+                    <ul class="collapse list-unstyled" id="apiSubmenu">
+                        <li> <a class="sidebar-text sidebar-subitem sidebar-button" href="{% url 'saludo' %}"><i class="fas fa-dot-circle"></i> Saludo</a> </li>
+                        <li> <a class="sidebar-text sidebar-subitem sidebar-button" href="{% url 'productos' %}"><i class="fas fa-dot-circle"></i> Productos</a> </li> 
+                    </ul>
+                </li>  
+                <li>
                     <a class="sidebar-text sidebar-button" href="{% url 'about' %}"><i class="fas fa-info-circle"></i> Info</a>
                 </li>
 

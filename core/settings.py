@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'rest_framework',
     'widget_tweaks',                            # uses 'django-widget-tweaks' app
     'crispy_forms',                             # uses 'django-crispy-forms' app
     'login_required',                           # uses 'django-login-required-middleware' app
@@ -140,4 +141,5 @@ LOGIN_REQUIRED_IGNORE_VIEW_NAMES = [                    # urls ignored by the lo
     'login',
     'logout',
     'about',
+    'product-list',
 ]

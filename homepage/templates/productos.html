@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+
+{% block title %} About {% endblock title %}
+
+
+{% block content %}
+    
+    {% if not user.is_authenticated  %}
+        <br>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Go Back</a>
+    {% endif %}    
+<head>
+    <title>Productos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Productos</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Asset</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for productos in productos %}
+                <tr>
+                    <td>{{ productos.nombre }}</td>
+                    <td>{{ productos.descripcion }}</td>
+                    <td>${{ productos.precio }}</td>
+                    <td><img src="{{ productos.asset }}" alt="Asset" style="max-width: 100px; max-height: 100px;"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+{% endblock content %}
