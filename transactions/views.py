@@ -28,7 +28,7 @@ from .forms import (
     SaleDetailsForm
 )
 from inventory.models import Stock
-
+from django.http import HttpResponseRedirect
 
 
 
