@@ -3,13 +3,13 @@
 {% load widget_tweaks %}
 
 
-{% block title %} Lista de Compras {% endblock title %}
+{% block title %} Lista de recepcion productos  {% endblock title %}
 
 
 {% block content %}
     
     <div class="row" style="color: #575757; font-style: bold; font-size: 3rem;">
-        <div class="col-md-8">Lista de Compras</div>
+        <div class="col-md-8">Lista de recepcion productos </div>
         <div class="col-md-4">               
             <div style="float:right;"> <a class="btn btn-success" href="{% url 'select-supplier' %}">
                 Nuevas existencias entrantes</a> </div>
@@ -26,7 +26,7 @@
                     Número de factura.</th>
                 <th width="15%">Provedor</th>
                 <th width="15%">
-                    Acciones compradas</th>
+                    Producto recepcionado</th>
                 <th width="10%">
                     Cantidad comprada</th>
                 <th width="15%">
