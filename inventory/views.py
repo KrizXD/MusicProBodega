@@ -12,6 +12,9 @@ from django_filters.views import FilterView
 from .filters import StockFilter
 from rest_framework import generics
 from .serializers import StockSerializer
+from faker import Faker
+
+fake = Faker()
 
 class StockListView(FilterView):
     filterset_class = StockFilter
@@ -32,6 +35,14 @@ class StockCreateView(SuccessMessageMixin, CreateView):
         context["title"] = 'Nuevo Stock'
         context["savebtn"] = 'Agregar al Inventario'
         return context
+
+    def form_valid(self, form):
+        num_products = 1000  # Número de productos a generar
+        for _ in range(num_products):
+            product = Stock()
+            product.generate_fake_data()  # Generar datos ficticios
+            product.save()
+        return super().form_valid(form)
 
 
 class StockUpdateView(SuccessMessageMixin, UpdateView):
