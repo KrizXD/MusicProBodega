@@ -78,3 +78,31 @@ class StockDeleteView(View):
 class StockList(generics.ListAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
+
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def recibir_formulario(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        productos_solicitados = data['productos']
+        respuesta = {'disponibles': [], 'no_disponibles': []}
+        for producto in productos_solicitados:
+            try:
+                stock_obj = Stock.objects.get(name=producto['nombre'])
+                if stock_obj.quantity >= producto['cantidad']:
+                    respuesta['disponibles'].append(producto)
+                else:
+                    respuesta['no_disponibles'].append(producto)
+            except Stock.DoesNotExist:
+                respuesta['no_disponibles'].append(producto)
+
+        return JsonResponse(respuesta)
+    else:
+        return JsonResponse({'error': 'Método no permitido'})
+
