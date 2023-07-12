@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %} Transporte {% endblock title %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Formulario de Transporte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      width: 400px;
+      margin: 0 auto;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 5px;
+      font-size: 14px;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    input[type="submit"] {
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Formulario de Transporte</h1>
+  <form method="post" action="https://musicpro.bemtorres.win/api/v1/transporte/solicitud">
+    {% csrf_token %}
+
+    <label for="nombre_origen">Nombre de origen:</label>
+    <input type="text" id="nombre_origen" name="nombre_origen">
+
+    <label for="direccion_origen">Dirección de origen:</label>
+    <input type="text" id="direccion_origen" name="direccion_origen">
+
+    <label for="nombre_destino">Nombre de destino:</label>
+    <input type="text" id="nombre_destino" name="nombre_destino">
+
+    <label for="direccion_destino">Dirección de destino:</label>
+    <input type="text" id="direccion_destino" name="direccion_destino">
+
+    <label for="comentario">Comentario:</label>
+    <textarea id="comentario" name="comentario"></textarea>
+
+    <label for="info">Información adicional:</label>
+    <textarea id="info" name="info"></textarea>
+
+    <input type="submit" value="Enviar">
+  </form>
+</body>
+</html>
+
+{% endblock content %}

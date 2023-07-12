@@ -10,6 +10,7 @@ class Supplier(models.Model):
     email = models.EmailField(max_length=254, unique=True)
     gstin = models.CharField(max_length=15, unique=True)
     is_deleted = models.BooleanField(default=False)
+    
 
     def __str__(self):
 	    return self.name
@@ -76,6 +77,8 @@ class SaleBill(models.Model):
     address = models.CharField(max_length=200)
     email = models.EmailField(max_length=254)
     gstin = models.CharField(max_length=15)
+    codigo_seguimiento = models.CharField(max_length=20, blank=True, null=True)
+
 
     def __str__(self):
         return "Bill no: " + str(self.billno)
@@ -98,6 +101,7 @@ class SaleItem(models.Model):
     quantity = models.IntegerField(default=1)
     perprice = models.IntegerField(default=1)
     totalprice = models.IntegerField(default=1)
+    codigo_seguimiento = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
 	    return "Bill no: " + str(self.billno.billno) + ", Item = " + self.stock.name
@@ -106,17 +110,9 @@ class SaleItem(models.Model):
 class SaleBillDetails(models.Model):
     billno = models.ForeignKey(SaleBill, on_delete = models.CASCADE, related_name='saledetailsbillno')
     
-    eway = models.CharField(max_length=50, blank=True, null=True)    
-    veh = models.CharField(max_length=50, blank=True, null=True)
     destination = models.CharField(max_length=50, blank=True, null=True)
-    po = models.CharField(max_length=50, blank=True, null=True)
-    
-    cgst = models.CharField(max_length=50, blank=True, null=True)
-    sgst = models.CharField(max_length=50, blank=True, null=True)
-    igst = models.CharField(max_length=50, blank=True, null=True)
-    cess = models.CharField(max_length=50, blank=True, null=True)
-    tcs = models.CharField(max_length=50, blank=True, null=True)
     total = models.CharField(max_length=50, blank=True, null=True)
+    codigo_seguimiento = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
 	    return "Bill no: " + str(self.billno.billno)

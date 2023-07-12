@@ -1,6 +1,8 @@
 from django.urls import path
 from django.conf.urls import url
 from . import views
+from .views import transporte_view
+from .views import seguimiento_view
 
 urlpatterns = [
     path('suppliers/', views.SupplierListView.as_view(), name='suppliers-list'),
@@ -17,6 +19,8 @@ urlpatterns = [
     path('sales/', views.SaleView.as_view(), name='sales-list'),
     path('sales/new', views.SaleCreateView.as_view(), name='new-sale'),
     path('sales/<pk>/delete', views.SaleDeleteView.as_view(), name='delete-sale'),
+    path('transporte/', transporte_view, name='transporte'),
+    path('seguimiento/', seguimiento_view, name='seguimiento'),
 
     path("purchases/<billno>", views.PurchaseBillView.as_view(), name="purchase-bill"),
     path("sales/<billno>", views.SaleBillView.as_view(), name="sale-bill"),

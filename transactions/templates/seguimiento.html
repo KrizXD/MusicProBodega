@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %} Seguimiento {% endblock title %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Consulta de Seguimiento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+        }
+
+        .form-group input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 16px;
+        }
+
+        .form-group input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .form-group input[type="submit"]:hover {
+            background-color: #555;
+        }
+
+        .result-message {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .result-message.success {
+            color: green;
+        }
+
+        .result-message.error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consulta de Seguimiento</h1>
+        <form method="post" action="{% url 'seguimiento' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="codigo_seguimiento">Código de Seguimiento:</label>
+                <input type="text" id="codigo_seguimiento" name="codigo_seguimiento" required>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Consultar">
+            </div>
+        </form>
+        {% if estado_seguimiento %}
+            <p class="result-message success">Estado del seguimiento: {{ estado_seguimiento }}</p>
+        {% endif %}
+        {% if error_message %}
+            <p class="result-message error">Error: {{ error_message }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
+
+{% endblock content %}

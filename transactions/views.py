@@ -32,6 +32,7 @@ from django.http import HttpResponseRedirect
 
 
 
+
 # shows a lists of all suppliers
 class SupplierListView(ListView):
     model = Supplier
@@ -45,7 +46,7 @@ class SupplierCreateView(SuccessMessageMixin, CreateView):
     model = Supplier
     form_class = SupplierForm
     success_url = '/transactions/suppliers'
-    success_message = "Supplier has been created successfully"
+    success_message = "Supplier a sido creado exitosamente"
     template_name = "suppliers/edit_supplier.html"
     
     def get_context_data(self, **kwargs):
@@ -60,7 +61,7 @@ class SupplierUpdateView(SuccessMessageMixin, UpdateView):
     model = Supplier
     form_class = SupplierForm
     success_url = '/transactions/suppliers'
-    success_message = "Supplier details has been updated successfully"
+    success_message = "Los detalles del Supplier han sido actualizados"
     template_name = "suppliers/edit_supplier.html"
     
     def get_context_data(self, **kwargs):
@@ -74,7 +75,7 @@ class SupplierUpdateView(SuccessMessageMixin, UpdateView):
 # used to delete a supplier
 class SupplierDeleteView(View):
     template_name = "suppliers/delete_supplier.html"
-    success_message = "Supplier has been deleted successfully"
+    success_message = "Supplier se a eliminado exitosamente"
 
     def get(self, request, pk):
         supplier = get_object_or_404(Supplier, pk=pk)
@@ -198,7 +199,7 @@ class PurchaseDeleteView(SuccessMessageMixin, DeleteView):
                 stock.quantity -= item.quantity
                 stock.save()
         self.object.delete()    # Elimina el objeto PurchaseBill de la base de datos
-        messages.success(self.request, "Purchase bill has been deleted successfully")
+        messages.success(self.request, "Los artículos comprados se han eliminado correctamente")
         return HttpResponseRedirect(self.success_url)
 
 
@@ -215,50 +216,49 @@ class SaleView(ListView):
 
 
 # used to generate a bill object and save items
-class SaleCreateView(View):                                                      
+class SaleCreateView(View):
     template_name = 'sales/new_sale.html'
 
     def get(self, request):
         form = SaleForm(request.GET or None)
-        formset = SaleItemFormset(request.GET or None)                          # renders an empty formset
+        formset = SaleItemFormset(request.GET or None)
         stocks = Stock.objects.filter(is_deleted=False)
         context = {
-            'form'      : form,
-            'formset'   : formset,
-            'stocks'    : stocks
+            'form': form,
+            'formset': formset,
+            'stocks': stocks
         }
         return render(request, self.template_name, context)
 
     def post(self, request):
         form = SaleForm(request.POST)
-        formset = SaleItemFormset(request.POST)                                 # recieves a post method for the formset
+        formset = SaleItemFormset(request.POST)
         if form.is_valid() and formset.is_valid():
-            # saves bill
             billobj = form.save(commit=False)
-            billobj.save()     
-            # create bill details object
+            billobj.save()
+
+            # Guardar el código de seguimiento en la boleta
+            billobj.codigo_seguimiento = form.cleaned_data['codigo_seguimiento']
+            billobj.save()
+
             billdetailsobj = SaleBillDetails(billno=billobj)
             billdetailsobj.save()
-            for form in formset:                                                # for loop to save each individual form as its own object
-                # false saves the item and links bill to the item
+            for form in formset:
                 billitem = form.save(commit=False)
-                billitem.billno = billobj                                       # links the bill object to the items
-                # gets the stock item
-                stock = get_object_or_404(Stock, name=billitem.stock.name)      
-                # calculates the total price
+                billitem.billno = billobj
+                stock = get_object_or_404(Stock, name=billitem.stock.name)
                 billitem.totalprice = billitem.perprice * billitem.quantity
-                # updates quantity in stock db
-                stock.quantity -= billitem.quantity   
-                # saves bill item and stock
+                stock.quantity -= billitem.quantity
                 stock.save()
                 billitem.save()
             messages.success(request, "Los artículos vendidos se han registrado correctamente")
             return redirect('sale-bill', billno=billobj.billno)
+
         form = SaleForm(request.GET or None)
         formset = SaleItemFormset(request.GET or None)
         context = {
-            'form'      : form,
-            'formset'   : formset,
+            'form': form,
+            'formset': formset,
         }
         return render(request, self.template_name, context)
 
@@ -278,7 +278,7 @@ class SaleDeleteView(SuccessMessageMixin, DeleteView):
                 stock.quantity += item.quantity
                 stock.save()
         self.object.delete()    # Elimina el objeto SaleBill de la base de datos
-        messages.success(self.request, "Sale bill has been deleted successfully")
+        messages.success(self.request, "La boleta a sido eliminada exitosamente")
         return HttpResponseRedirect(self.success_url)
 
 
@@ -300,31 +300,21 @@ class PurchaseBillView(View):
         return render(request, self.template_name, context)
 
     def post(self, request, billno):
-        form = PurchaseDetailsForm(request.POST)
+        form = SaleDetailsForm(request.POST)
         if form.is_valid():
-            billdetailsobj = PurchaseBillDetails.objects.get(billno=billno)
-            
-            billdetailsobj.eway = request.POST.get("eway")    
-            billdetailsobj.veh = request.POST.get("veh")
-            billdetailsobj.destination = request.POST.get("destination")
-            billdetailsobj.po = request.POST.get("po")
-            billdetailsobj.cgst = request.POST.get("cgst")
-            billdetailsobj.sgst = request.POST.get("sgst")
-            billdetailsobj.igst = request.POST.get("igst")
-            billdetailsobj.cess = request.POST.get("cess")
-            billdetailsobj.tcs = request.POST.get("tcs")
+            billdetailsobj = SaleBillDetails.objects.get(billno=billno)
             billdetailsobj.total = request.POST.get("total")
-
+            billdetailsobj.codigo_seguimiento = request.POST.get("codigo_seguimiento")  # Guardar el código de seguimiento
             billdetailsobj.save()
-            messages.success(request, "Bill details have been modified successfully")
+            messages.success(request, "El detalle de la boleta ha sido actualizado")
+
         context = {
-            'bill'          : PurchaseBill.objects.get(billno=billno),
-            'items'         : PurchaseItem.objects.filter(billno=billno),
-            'billdetails'   : PurchaseBillDetails.objects.get(billno=billno),
-            'bill_base'     : self.bill_base,
+            'bill': SaleBill.objects.get(billno=billno),
+            'items': SaleItem.objects.filter(billno=billno),
+            'billdetails': SaleBillDetails.objects.get(billno=billno),
+            'bill_base': self.bill_base,
         }
         return render(request, self.template_name, context)
-
 
 # used to display the sale bill object
 class SaleBillView(View):
@@ -345,24 +335,72 @@ class SaleBillView(View):
         form = SaleDetailsForm(request.POST)
         if form.is_valid():
             billdetailsobj = SaleBillDetails.objects.get(billno=billno)
-            
-            billdetailsobj.eway = request.POST.get("eway")    
-            billdetailsobj.veh = request.POST.get("veh")
-            billdetailsobj.destination = request.POST.get("destination")
-            billdetailsobj.po = request.POST.get("po")
-            billdetailsobj.cgst = request.POST.get("cgst")
-            billdetailsobj.sgst = request.POST.get("sgst")
-            billdetailsobj.igst = request.POST.get("igst")
-            billdetailsobj.cess = request.POST.get("cess")
-            billdetailsobj.tcs = request.POST.get("tcs")
             billdetailsobj.total = request.POST.get("total")
-
+            billdetailsobj.codigo_seguimiento = request.POST.get("codigo_seguimiento")  # Guardar el código de seguimiento
             billdetailsobj.save()
-            messages.success(request, "Bill details have been modified successfully")
+            messages.success(request, "El detalle de la boleta ha sido actualizado")
+
         context = {
-            'bill'          : SaleBill.objects.get(billno=billno),
-            'items'         : SaleItem.objects.filter(billno=billno),
-            'billdetails'   : SaleBillDetails.objects.get(billno=billno),
-            'bill_base'     : self.bill_base,
+            'bill': SaleBill.objects.get(billno=billno),
+            'items': SaleItem.objects.filter(billno=billno),
+            'billdetails': SaleBillDetails.objects.get(billno=billno),
+            'bill_base': self.bill_base,
         }
         return render(request, self.template_name, context)
+
+
+
+from django.shortcuts import render
+import requests
+
+def transporte_view(request):
+    if request.method == 'POST':
+        # Obtener los datos del formulario
+        nombre_origen = request.POST['nombre_origen']
+        direccion_origen = request.POST['direccion_origen']
+        nombre_destino = request.POST['nombre_destino']
+        direccion_destino = request.POST['direccion_destino']
+        comentario = request.POST['comentario']
+        info = request.POST['info']
+        
+        # Crear el diccionario de datos para enviar a la API
+        data = {
+            "nombre_origen": nombre_origen,
+            "direccion_origen": direccion_origen,
+            "nombre_destino": nombre_destino,
+            "direccion_destino": direccion_destino,
+            "comentario": comentario,
+            "info": info
+        }
+        
+        # Realizar la solicitud POST a la API
+        response = requests.post("https://musicpro.bemtorres.win/api/v1/transporte/solicitud", json=data)
+        
+        # Procesar la respuesta de la API
+        if response.status_code == 200:
+            # La solicitud fue exitosa, procesa la respuesta como desees
+            codigo_seguimiento = response.json()['codigo_seguimiento']
+            return render(request, 'exito.html', {'codigo_seguimiento': codigo_seguimiento})
+        else:
+            # La solicitud falló, maneja el error como desees
+            return render(request, 'error.html')
+    else:
+        return render(request, 'transporte.html')
+
+
+
+def seguimiento_view(request):
+    if request.method == 'POST':
+        codigo_seguimiento = request.POST.get('codigo_seguimiento')
+        url = f'https://musicpro.bemtorres.win/api/v1/transporte/seguimiento/{codigo_seguimiento}'
+        
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            estado_seguimiento = data['result']['estado']
+            return render(request, 'seguimiento.html', {'estado_seguimiento': estado_seguimiento})
+        else:
+            # Manejar el caso de error en la respuesta de la API
+            return render(request, 'seguimiento.html', {'error_message': 'Error en la consulta'})
+
+    return render(request, 'seguimiento.html')
